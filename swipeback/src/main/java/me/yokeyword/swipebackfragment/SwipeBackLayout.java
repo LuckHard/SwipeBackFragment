@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -42,6 +43,10 @@ public class SwipeBackLayout extends FrameLayout {
 
     public static final int EDGE_ALL = EDGE_LEFT | EDGE_RIGHT;
 
+    /**
+     * Edge default sensitivity for touch slop.
+     */
+    public static final float DEFAULT_SENSITIVITY = 0.24F;
 
     /**
      * A view is not currently being dragged or animating as a result of a
@@ -88,6 +93,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     private Context context;
     private EdgeLevel edgeLevel;
+    private float mSensitivity = DEFAULT_SENSITIVITY;
 
     public enum EdgeLevel {
         MAX, MIN, MED
@@ -113,9 +119,18 @@ public class SwipeBackLayout extends FrameLayout {
     }
 
     private void init() {
-        mHelper = ViewDragHelper.create(this, new ViewDragCallback());
+        mHelper = ViewDragHelper.create(this, mSensitivity, new ViewDragCallback());
         setShadow(R.drawable.shadow_left, EDGE_LEFT);
         setEdgeOrientation(EDGE_LEFT);
+    }
+
+    /**
+     * Set sensitivity
+     *
+     * @param sensitivity
+     */
+    public void setSensitivity(float sensitivity) {
+        this.mSensitivity = sensitivity;
     }
 
     /**
@@ -454,7 +469,7 @@ public class SwipeBackLayout extends FrameLayout {
             } else if (mActivity != null && ((SwipeBackActivity) mActivity).swipeBackPriority()) {
                 return 1;
             }
-            
+
             return 0;
         }
 
